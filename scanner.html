@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritas | Web Security Analyzer</title>
+    <style>
+        :root {
+            --dark-navy: #1a2a33;
+            --deep-bg: #0f171c;
+            --blue-accent: #7baebf;
+            --warning-amber: #f39c12;
+            --success-green: #2ecc71;
+            --text-dim: #94a3b8;
+            --footer-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            background-color: var(--deep-bg);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        nav {
+            background: white;
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Link style for logo to go home */
+        .logo-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            color: var(--dark-navy);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .logo-link span { font-weight: 400; color: #777; margin-left: 5px; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #444;
+            margin-left: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .hero {
+            position: relative;
+            height: 520px;
+            background: var(--dark-navy);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .bg-info-stream {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: rgba(123, 174, 191, 0.12);
+            padding: 20px;
+            pointer-events: none;
+            user-select: none;
+            line-height: 1.4;
+            column-count: 4;
+        }
+
+        .content-wrap {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .hero h1 { font-size: 2.8rem; margin: 0; font-weight: 700; }
+        .hero p { color: var(--text-dim); margin: 15px 0 40px; }
+
+        .scanner-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            color: white;
+            flex: 1;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .btn-scan {
+            background: var(--blue-accent);
+            color: white;
+            border: none;
+            padding: 0 30px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-scan:hover { background: #96c2d1; }
+
+        .result-panel {
+            margin-top: 30px;
+            display: none;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .status-box {
+            background: rgba(15, 23, 28, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+            border-left: 5px solid transparent;
+        }
+
+        .status-box.warning { border-left-color: var(--warning-amber); }
+        .status-box.secure { border-left-color: var(--success-green); }
+
+        footer {
+            background: var(--footer-bg);
+            padding: 40px 8% 20px;
+            display: flex;
+            justify-content: space-between;
+            color: #555;
+            font-size: 0.85rem;
+            border-top: 1px solid #eee;
+        }
+
+        .credits-section {
+            background: #f9f9f9;
+            padding: 20px 8%;
+            text-align: center;
+            border-top: 1px solid #eee;
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo-link">
+            <svg style="width:24px; height:24px; margin-right:8px; fill:var(--blue-accent);" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.5h7c-.47 4.09-3.15 7.72-7 8.9V11.5H5V6.3l7-3.11v8.31z"/></svg>
+            VERITAS: <span>Fraud Detection</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#">Security Protocol</a>
+            <a href="#">Threat Database</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="bg-info-stream" id="telemetry"></div>
+
+        <div class="content-wrap">
+            <h1>Web Security Analyzer</h1>
+            <p>Identifying protocol vulnerabilities and real-time encryption status.</p>
+
+            <div class="scanner-container">
+                <input type="text" id="urlInput" placeholder="Analyze URL (e.g., http://unencrypted-site.com)">
+                <button class="btn-scan" onclick="runAnalysis()">SCAN URL</button>
+            </div>
+
+            <div id="resultPanel" class="result-panel"></div>
+        </div>
+    </header>
+
+    <footer>
+        <div>&copy; 2026 Veritas Security Group.</div>
+        <div style="display:flex; gap:25px;">
+            <span>Privacy Policy</span>
+            <span>Support</span>
+        </div>
+    </footer>
+
+    <div class="credits-section">
+        Developed and Designed by <strong>Pratham Gusain</strong>
+    </div>
+
+    <script>
+        // Telemetry stream generator
+        const stream = document.getElementById('telemetry');
+        const logs = ["SCANNING...", "SSL_INIT", "AES_256_ACTIVE", "PORT_443_OPEN", "THREAT_SCAN_0%"];
+        for(let i=0; i<100; i++) {
+            stream.innerHTML += logs[Math.floor(Math.random() * logs.length)] + " &nbsp;&nbsp; ";
+        }
+
+        function runAnalysis() {
+            const url = document.getElementById('urlInput').value.toLowerCase();
+            const panel = document.getElementById('resultPanel');
+            if(!url) return;
+            panel.style.display = 'block';
+
+            if(url.startsWith('http://')) {
+                panel.innerHTML = `
+                    <div class="status-box warning">
+                        <div><strong style="color:var(--warning-amber)">SECURITY WARNING</strong><br>
+                        <small>Unsecured HTTP protocol detected. Data is not encrypted.</small></div>
+                    </div>`;
+            } else if(url.startsWith('https://')) {
+                panel.innerHTML = `
+                    <div class="status-box secure">
+                        <div><strong style="color:var(--success-green)">SECURE CONNECTION</strong><br>
+                        <small>HTTPS verified. SSL/TLS encryption is active.</small></div>
+                    </div>`;
+            } else {
+                panel.innerHTML = `<div class="status-box">Please include http:// or https://</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
